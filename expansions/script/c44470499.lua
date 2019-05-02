@@ -22,7 +22,7 @@ function c44470499.initial_effect(c)
 	e21:SetType(EFFECT_TYPE_FIELD)
 	e21:SetRange(LOCATION_ONFIELD)
 	e21:SetCode(EFFECT_CANNOT_TRIGGER)
-	e21:SetTargetRange(0,LOCATION_MZONE)
+	e21:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e21:SetTarget(c44470499.etarget)
 	e21:SetLabelObject(g)
 	c:RegisterEffect(e21)
@@ -31,25 +31,22 @@ function c44470499.initial_effect(c)
 	e22:SetType(EFFECT_TYPE_FIELD)
 	e22:SetCode(EFFECT_CANNOT_ATTACK)
 	e22:SetRange(LOCATION_ONFIELD)
-	e22:SetTargetRange(0,LOCATION_MZONE)
+	e22:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e22:SetTarget(c44470499.etarget)
 	e22:SetLabelObject(g)
 	c:RegisterEffect(e22)
-	--sset
+	--Def up
 	local e24=Effect.CreateEffect(c)
-	e24:SetType(EFFECT_TYPE_QUICK_O)
-	e24:SetCode(EVENT_FREE_CHAIN)
-	e24:SetRange(LOCATION_GRAVE)
-	e24:SetHintTiming(0,TIMING_END_PHASE)
-	e24:SetCountLimit(1,44470499)
-	e24:SetCondition(c44470499.condition)
-	e24:SetCost(aux.bfgcost)
-	e24:SetTarget(c44470499.stg)
-	e24:SetOperation(c44470499.sop)
+	e24:SetType(EFFECT_TYPE_FIELD)
+	e24:SetRange(LOCATION_ONFIELD)
+	e24:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e24:SetCode(EFFECT_UPDATE_DEFENSE)
+	e24:SetTarget(aux.TargetBoolFunction(Card.IsType,TYPE_NORMAL))
+	e24:SetValue(1500)
 	c:RegisterEffect(e24)
 end
 function c44470499.adjustop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	local preg=e:GetLabelObject()
 	if g:GetCount()>0 then
 		local ag=g:GetMaxGroup(Card.GetAttack)
@@ -66,33 +63,4 @@ end
 function c44470499.etarget(e,c)
 	return e:GetLabelObject():IsContains(c)
 	--and c:IsType(TYPE_EFFECT)
-end
---sset
-function c44470499.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
-end
-function c44470499.filter(c)
-	return c:IsType(TYPE_MONSTER)
-end
-function c44470499.stg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c44470499.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)
-		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
-end
-function c44470499.sop(e,tp,eg,ep,ev,re,r,rp)
-	--if not e:GetHandler():IsRelateToEffect(e) then return end
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,c44470499.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
-		Duel.ConfirmCards(1-tp,tc)
-		local e1=Effect.CreateEffect(e:GetHandler())
-	    e1:SetType(EFFECT_TYPE_SINGLE)
-	    e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	    e1:SetValue(TYPE_SPELL)
-		e1:SetReset(RESET_EVENT+0x1fe0000)
-	    tc:RegisterEffect(e1)
-	end
 end

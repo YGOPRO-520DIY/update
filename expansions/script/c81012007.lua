@@ -1,52 +1,47 @@
---春游日·艾米莉
+--Answer·胁山珠美
 function c81012007.initial_effect(c)
-	--lv up
+	--pendulum summon
+	aux.EnablePendulumAttribute(c,false)
+	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
-	e1:SetOperation(c81012007.lvop)
+	e1:SetDescription(1160)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCost(c81012007.reg)
 	c:RegisterEffect(e1)
-	--tohand
+	--destroy
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_RELEASE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,81012007)
-	e2:SetCondition(c81012007.thcon)
-	e2:SetTarget(c81012007.thtg)
-	e2:SetOperation(c81012007.thop)
+	e2:SetDescription(aux.Stringid(81012007,0))
+	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_PHASE+PHASE_END)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetCountLimit(1)
+	e2:SetRange(LOCATION_PZONE)
+	e2:SetCondition(c81012007.descon)
+	e2:SetTarget(c81012007.destg)
+	e2:SetOperation(c81012007.desop)
 	c:RegisterEffect(e2)
 end
-function c81012007.lvop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsFaceup() and c:IsRelateToEffect(e) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_LEVEL)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
-		e1:SetValue(4)
-		c:RegisterEffect(e1)
-	end
+function c81012007.reg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	e:GetHandler():RegisterFlagEffect(81012007,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
-function c81012007.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return bit.band(r,REASON_EFFECT)~=0
+function c81012007.descon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(81012007)~=0
 end
-function c81012007.thfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
+function c81012007.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and chkc~=e:GetHandler() end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
-function c81012007.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c81012007.thfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c81012007.thfilter,tp,LOCATION_REMOVED,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectTarget(tp,c81012007.thfilter,tp,LOCATION_REMOVED,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
-end
-function c81012007.thop(e,tp,eg,ep,ev,re,r,rp)
+function c81012007.desop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+		Duel.Destroy(tc,REASON_EFFECT)
 	end
 end

@@ -54,8 +54,8 @@ function c81008002.initial_effect(c)
 	e8:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	c:RegisterEffect(e8)
 end
-function c81008002.ffilter(c)
-	return c:IsFusionType(TYPE_EFFECT) and c:IsOnField()
+function c81008002.ffilter(c,tp)
+	return c:IsFusionType(TYPE_EFFECT) and c:IsOnField() and c:GetOwner()==tp
 end
 function c81008002.actcon(e)
 	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()
