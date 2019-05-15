@@ -1,5 +1,6 @@
-# update
-YGODCG更新补丁
+﻿# update
+YGODCG
+更新补丁
 (一)使用说明
 本补丁只包含每期最新更新卡
 手机端完整更新:http://ygopro-520dcg.sxl.cn/
