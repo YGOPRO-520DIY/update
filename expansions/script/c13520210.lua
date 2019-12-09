@@ -1,5 +1,5 @@
 local m=13520210
-local tg={13520200,13520220}
+local tg={13520200,13520230}
 local cm=_G["c"..m]
 cm.name="花骑士 油橄榄"
 function cm.initial_effect(c)
@@ -28,7 +28,7 @@ function cm.flower(c)
 end
 --Special Summon
 function cm.costfilter(c,tp)
-	return cm.flower(c) and c:IsFaceup() and c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0
+	return c:IsFaceup() and cm.flower(c) and c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_ONFIELD,0,1,nil,tp) end

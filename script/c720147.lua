@@ -26,7 +26,7 @@ function c720147.matfilter1(c,tp,g)
 		and Duel.IsExistingMatchingCard(c720147.matfilter2,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,g:GetCount(),sg)
 end
 function c720147.matfilter2(c)
-	return c:IsSetCard(0x134) and c:IsType(TYPE_MONSTER) and not c:IsType(TYPE_TOKEN) and not c:IsForbidden()
+	return c:IsSetCard(0x134) and c:IsType(TYPE_MONSTER) and c:IsCanOverlay()
 end
 function c720147.fselect(g,tp)
 	if Duel.IsExistingTarget(c720147.matfilter1,tp,LOCATION_MZONE,0,1,g,tp,g) then
@@ -43,7 +43,7 @@ function c720147.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	end
 	local rg=Duel.GetReleaseGroup(tp):Filter(c720147.costfilter,nil,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local sg=rg:SelectSubGroup(tp,c720147.fselect,false,1,99,tp)
+	local sg=rg:SelectSubGroup(tp,c720147.fselect,false,1,rg:GetCount(),tp)
 	sg:KeepAlive()
 	e:SetLabelObject(sg)
 	Duel.Release(sg,REASON_COST)

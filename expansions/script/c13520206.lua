@@ -1,5 +1,5 @@
 local m=13520206
-local tg={13520200,13520220}
+local tg={13520200,13520230}
 local cm=_G["c"..m]
 cm.name="花骑士 长春花"
 function cm.initial_effect(c)
@@ -17,7 +17,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--Disable
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetDescription(aux.Stringid(m,2))
 	e2:SetCategory(CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_RELEASE)
@@ -43,7 +43,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
-		and tc:IsFaceup() and tc:IsRelateToEffect(e) then
+		and tc:IsFaceup() and tc:IsRelateToEffect(e) and c:GetLevel()~=tc:GetLevel()
+		and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.BreakEffect()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -60,7 +61,7 @@ end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and chkc:IsFaceup() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
 	Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,1,nil)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)

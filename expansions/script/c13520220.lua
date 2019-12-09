@@ -1,5 +1,5 @@
 local m=13520220
-local tg={13520200,13520220}
+local tg={13520200,13520230}
 local cm=_G["c"..m]
 cm.name="花骑士 棱轴土人参"
 function cm.initial_effect(c)
@@ -29,14 +29,14 @@ function cm.flower(c)
 end
 --Link Summon
 function cm.mfilter(c)
-	return c:IsLinkRace(RACE_PLANT)
+	return c:IsLinkRace(RACE_PLANT) and c:IsLocation(LOCATION_MZONE)
 end
 function cm.lcheck(g,lc)
 	return g:GetClassCount(Card.GetPosition)==g:GetCount()
 end
 --To Grave
 function cm.costfilter(c)
-	return cm.flower(c) and c:IsFaceup() and c:IsReleasable()
+	return c:IsFaceup() and cm.flower(c) and c:IsReleasable()
 end
 function cm.bancost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end

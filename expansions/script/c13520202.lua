@@ -1,5 +1,5 @@
 local m=13520202
-local tg={13520200,13520220}
+local tg={13520200,13520230}
 local cm=_G["c"..m]
 cm.name="花骑士 欧洲七叶树"
 function cm.initial_effect(c)

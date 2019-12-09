@@ -1,7 +1,7 @@
 --淘气仙星·奥莉德
 function c65080517.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,nil,2,99,c65080517.lcheck)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xfb),2,99)
 	c:EnableReviveLimit()
 	 --destroy replace
 	local e2=Effect.CreateEffect(c)
@@ -27,10 +27,6 @@ function c65080517.initial_effect(c)
 	c:RegisterEffect(e4)
 	Duel.AddCustomActivityCounter(65080517,ACTIVITY_SPSUMMON,c65080517.counterfilter)
 end
-function c65080517.lcheck(g,lc)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0xfb)
-end
-
 function c65080517.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and r&REASON_EFFECT==REASON_EFFECT and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsSetCard(0xfb)
 end
@@ -71,7 +67,7 @@ end
 
 
 function c65080517.dfilter(c,tp)
-	return c:IsControler(tp) and c:IsSetCard(0xfb) and c:IsLocation(LOCATION_MZONE) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
+	return c:IsControler(tp) and c:IsSetCard(0xfb) and c:IsLocation(LOCATION_MZONE) and (c:IsReason(REASON_BATTLE) or (c:IsReason(REASON_EFFECT) and c:GetReasonPlayer()==1-tp)) and not c:IsReason(REASON_REPLACE)
 end
 function c65080517.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(c65080517.dfilter,1,nil,tp)
@@ -79,7 +75,7 @@ function c65080517.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	return true
 end
 function c65080517.value(e,c)
-	return c:IsControler(e:GetHandlerPlayer()) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE) and c:IsSetCard(0xfb) and c:IsLocation(LOCATION_MZONE)
+	return c65080517.dfilter(c,e:GetHandlerPlayer())
 end
 function c65080517.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,65080517)

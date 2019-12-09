@@ -1,5 +1,5 @@
 local m=13520211
-local tg={13520200,13520220}
+local tg={13520200,13520230}
 local cm=_G["c"..m]
 cm.name="花骑士 太平洋菊"
 function cm.initial_effect(c)
@@ -34,7 +34,7 @@ function cm.flower(c)
 end
 --Extra Tribute
 function cm.tribute(e,c)
-	return cm.flower(c) and c:IsFaceup() and c:IsType(TYPE_TRAP)
+	return c:IsFaceup() and cm.flower(c) and c:IsType(TYPE_TRAP)
 end
 --Set
 function cm.setfilter(c)

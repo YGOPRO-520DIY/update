@@ -1,5 +1,5 @@
 local m=13520204
-local tg={13520200,13520220}
+local tg={13520200,13520230}
 local cm=_G["c"..m]
 cm.name="花骑士 红叶"
 function cm.initial_effect(c)
@@ -31,28 +31,32 @@ end
 function cm.spfilter(c)
 	return c:IsRace(RACE_PLANT)
 end
+function cm.rcheck(gc)
+	return  function(tp,g,c)
+				return g:IsContains(gc)
+			end
+end
 function cm.rstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
-		local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsLocation,nil,LOCATION_MZONE)
-		local sg=nil
-		return mg:IsContains(c) and Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,cm.spfilter,e,tp,mg,sg,Card.GetLevel,"Greater",c)
+		local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsLocation,nil,LOCATION_ONFIELD)
+		aux.RCheckAdditional=cm.rcheck(c)
+		local res=mg:IsContains(c) and Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,cm.spfilter,e,tp,mg,nil,Card.GetLevel,"Greater")
+		aux.RCheckAdditional=nil
+		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsLocation,nil,LOCATION_MZONE)
-	local sg=nil
+	local mg=Duel.GetRitualMaterial(tp):Filter(Card.IsLocation,nil,LOCATION_ONFIELD)
 	if c:GetControler()~=tp or not c:IsRelateToEffect(e) or not mg:IsContains(c) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tg=Duel.SelectMatchingCard(tp,aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,cm.spfilter,e,tp,mg,sg,Card.GetLevel,"Greater",c)
-	local tc=tg:GetFirst()
+	aux.RCheckAdditional=cm.rcheck(c)
+	local g=Duel.SelectMatchingCard(tp,aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,cm.spfilter,e,tp,mg,nil,Card.GetLevel,"Greater")
+	local tc=g:GetFirst()
 	if tc then
 		mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
-		if sg then
-			mg:Merge(sg)
-		end
 		if tc.mat_filter then
 			mg=mg:Filter(tc.mat_filter,tc,tp)
 		else
@@ -64,13 +68,17 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 		aux.GCheckAdditional=aux.RitualCheckAdditional(tc,tc:GetLevel(),"Greater")
 		local mat=mg:SelectSubGroup(tp,aux.RitualCheck,false,1,tc:GetLevel(),tp,tc,tc:GetLevel(),"Greater")
 		aux.GCheckAdditional=nil
-		if not mat or mat:GetCount()==0 then return end
+		if not mat or mat:GetCount()==0 then
+			aux.RCheckAdditional=nil
+			return
+		end
 		tc:SetMaterial(mat)
 		Duel.ReleaseRitualMaterial(mat)
 		Duel.BreakEffect()
 		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 		tc:CompleteProcedure()
 	end
+	aux.RCheckAdditional=nil
 end
 --Draw
 function cm.drfilter(c)

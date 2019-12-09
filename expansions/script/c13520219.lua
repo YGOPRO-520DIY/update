@@ -1,5 +1,5 @@
 local m=13520219
-local tg={13520200,13520220}
+local tg={13520200,13520230}
 local cm=_G["c"..m]
 cm.name="花骑士 酢浆草"
 function cm.initial_effect(c)
@@ -25,6 +25,16 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetValue(cm.atkval)
 	c:RegisterEffect(e2)
+	--Message
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_SUMMON_SUCCESS)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetOperation(cm.msg)
+	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e4)
 end
 function cm.flower(c)
 	return c:GetCode()>tg[1] and c:GetCode()<=tg[2]
@@ -35,7 +45,7 @@ function cm.mfilter(c)
 end
 --Special Summon
 function cm.spfilter(c,e,tp,zone)
-	return cm.flower(c) and c:IsFaceup() and not c:IsLocation(LOCATION_FZONE+LOCATION_PZONE)
+	return c:IsFaceup() and cm.flower(c) and not c:IsLocation(LOCATION_FZONE+LOCATION_PZONE)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE,tp,zone)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -61,4 +71,10 @@ function cm.val(c)
 end
 function cm.atkval(e,c)
 	return c:GetLinkedGroup():GetSum(cm.val)
+end
+--Message
+function cm.msg(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,1))
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,2))
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,3))
 end

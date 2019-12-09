@@ -1,5 +1,5 @@
 local m=13520217
-local tg={13520200,13520220}
+local tg={13520200,13520230}
 local cm=_G["c"..m]
 cm.name="花骑士 北美刺龙葵"
 function cm.initial_effect(c)
@@ -51,7 +51,7 @@ function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 end
 --Damage Conversion
 function cm.cvfilter(c)
-	return cm.flower(c) and c:IsFaceup() and c:IsReleasable()
+	return c:IsFaceup() and cm.flower(c) and c:IsReleasable()
 end
 function cm.cvcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
