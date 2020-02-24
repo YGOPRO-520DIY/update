@@ -63,3 +63,15 @@ end
 function Tenka.btkval(e,c)
 	return c:GetLevel()*300
 end
+--kobayashi maid dragon
+--advanced summon
+function Tenka.MaidDragon(c)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_ADD_EXTRA_TRIBUTE)
+	e0:SetTargetRange(LOCATION_SZONE,LOCATION_SZONE)
+	e0:SetTarget(aux.TargetBoolFunction(Card.IsType,TYPE_FIELD))
+	e0:SetValue(POS_FACEUP_ATTACK)
+	c:RegisterEffect(e0)
+end

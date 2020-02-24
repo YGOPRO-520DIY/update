@@ -30,7 +30,7 @@ function c81007013.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c81007013.ovfilter(c)
-	return c:IsFaceup() and c:IsXyzType(TYPE_XYZ) and c:IsRank(7,8,9)
+	return c:IsFaceup() and c:IsXyzType(TYPE_XYZ) and c:IsRank(7,8,9) and c:IsAttribute(ATTRIBUTE_WIND)
 end
 function c81007013.xyzop(e,tp,chk,mc)
 	if chk==0 then return mc:CheckRemoveOverlayCard(tp,2,REASON_COST) end

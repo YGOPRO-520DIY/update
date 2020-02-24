@@ -61,6 +61,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()  
 	if not tc:IsRelateToEffect(e) then return end  
 	if Duel.SendtoHand(tc,nil,REASON_EFFECT)==1 and tc:GetLocation()==LOCATION_HAND and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		Duel.BreakEffect()
 		Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
 	end  
 end  
