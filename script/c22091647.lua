@@ -38,7 +38,8 @@ function c22091647.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c22091647.costfilter(c)
-	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:GetType()==TYPE_EQUIP+TYPE_SPELL and c:IsAbleToRemoveAsCost()
+	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup() or c:GetEquipTarget()) and c:GetType()==TYPE_EQUIP+TYPE_SPELL
+		and c:IsAbleToRemoveAsCost()
 end
 function c22091647.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22091647.costfilter,tp,LOCATION_SZONE+LOCATION_GRAVE,0,1,nil) end
@@ -73,7 +74,7 @@ function c22091647.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,aux.ExceptThisCard(e))
 	local tc=g:GetFirst()
 	if tc then
-		if not Duel.Equip(tp,tc,c,true) then return end
+		if not Duel.Equip(tp,tc,c) then return end
 		tc:RegisterFlagEffect(22091647,RESET_EVENT+RESETS_STANDARD,0,0)
 		e:SetLabelObject(tc)
 		local e1=Effect.CreateEffect(c)

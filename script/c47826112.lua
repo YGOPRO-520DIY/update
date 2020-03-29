@@ -24,31 +24,11 @@ end
 function c47826112.cfilter(c,tp)
 	return c:IsLevelBelow(3) and c:IsAttribute(ATTRIBUTE_WATER) and (c:IsControler(tp) or c:IsFaceup())
 end
-function c47826112.fselect(c,tp,rg,sg)
-	sg:AddCard(c)
-	if sg:GetCount()<3 then
-		res=rg:IsExists(c47826112.fselect,1,sg,tp,rg,sg)
-	else
-		res=c47826112.fgoal(tp,sg)
-	end
-	sg:RemoveCard(c)
-	return res
-end
-function c47826112.fgoal(tp,sg)
-	if sg:GetCount()>0 and Duel.GetMZoneCount(tp,sg)>0 then
-		Duel.SetSelectedCard(sg)
-		return Duel.CheckReleaseGroup(tp,nil,0,nil)
-	else return false end
-end
 function c47826112.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rg=Duel.GetReleaseGroup(tp):Filter(c47826112.cfilter,nil,tp)
-	local g=Group.CreateGroup()
-	if chk==0 then return rg:IsExists(c47826112.fselect,1,nil,tp,rg,g) end
-	while g:GetCount()<3 do
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local sg=rg:FilterSelect(tp,c47826112.fselect,1,1,g,tp,rg,g)
-		g:Merge(sg)
-	end
+	if chk==0 then return rg:CheckSubGroup(aux.mzctcheckrel,3,3,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=rg:SelectSubGroup(tp,aux.mzctcheckrel,false,3,3,tp)
 	Duel.Release(g,REASON_COST)
 end
 function c47826112.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

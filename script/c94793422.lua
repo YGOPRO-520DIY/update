@@ -5,7 +5,7 @@ function c94793422.initial_effect(c)
 	e1:SetCategory(CATEGORY_EQUIP)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_CONTINUOUS_TARGET)
 	e1:SetTarget(c94793422.target)
 	e1:SetOperation(c94793422.operation)
 	c:RegisterEffect(e1)
@@ -18,11 +18,9 @@ function c94793422.initial_effect(c)
 	c:RegisterEffect(e2)
 	--damage change
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetRange(LOCATION_SZONE)
-	e3:SetCode(EVENT_PRE_BATTLE_DAMAGE)
-	e3:SetCondition(c94793422.damcon)
-	e3:SetOperation(c94793422.damop)
+	e3:SetType(EFFECT_TYPE_EQUIP)
+	e3:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
+	e3:SetValue(aux.ChangeBattleDamage(1,1000))
 	c:RegisterEffect(e3)
 end
 function c94793422.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -37,10 +35,4 @@ function c94793422.operation(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) and tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		Duel.Equip(tp,e:GetHandler(),tc)
 	end
-end
-function c94793422.damcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:GetFirst()==e:GetHandler():GetEquipTarget() and ep~=tp
-end
-function c94793422.damop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ChangeBattleDamage(ep,1000)
 end

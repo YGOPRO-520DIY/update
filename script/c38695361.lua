@@ -29,7 +29,7 @@ function c38695361.initial_effect(c)
 end
 function c38695361.atkcon1(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE and (ph~=PHASE_DAMAGE or not Duel.IsDamageCalculated())
+	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE and aux.dscon()
 end
 function c38695361.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
@@ -83,31 +83,12 @@ end
 function c38695361.spcostfilter(c)
 	return c:IsAbleToRemoveAsCost() and c:IsAttribute(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)
 end
-function c38695361.spcost_selector(c,tp,g,sg,i)
-	sg:AddCard(c)
-	g:RemoveCard(c)
-	local flag=false
-	if i<2 then
-		flag=g:IsExists(c38695361.spcost_selector,1,nil,tp,g,sg,i+1)
-	else
-		flag=sg:FilterCount(Card.IsAttribute,nil,ATTRIBUTE_LIGHT)>0
-			and sg:FilterCount(Card.IsAttribute,nil,ATTRIBUTE_DARK)>0
-	end
-	sg:RemoveCard(c)
-	g:AddCard(c)
-	return flag
-end
 function c38695361.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(c38695361.spcostfilter,tp,LOCATION_GRAVE,0,c)
-	local sg=Group.CreateGroup()
-	if chk==0 then return g:IsExists(c38695361.spcost_selector,1,nil,tp,g,sg,1) end
-	for i=1,2 do
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g1=g:FilterSelect(tp,c38695361.spcost_selector,1,1,nil,tp,g,sg,i)
-		sg:Merge(g1)
-		g:Sub(g1)
-	end
+	if chk==0 then return g:CheckSubGroup(aux.gfcheck,2,2,Card.IsAttribute,ATTRIBUTE_LIGHT,ATTRIBUTE_DARK) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local sg=g:SelectSubGroup(tp,aux.gfcheck,false,2,2,Card.IsAttribute,ATTRIBUTE_LIGHT,ATTRIBUTE_DARK)
 	Duel.Remove(sg,POS_FACEUP,REASON_COST)
 end
 function c38695361.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

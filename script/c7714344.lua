@@ -59,7 +59,7 @@ function c7714344.cfilter(c)
 	return c:IsSetCard(0x9f) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost() and not c:IsCode(7714344)
 end
 function c7714344.damcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp and (Duel.IsAbleToEnterBP() or (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE))
+	return Duel.GetTurnPlayer()~=tp and aux.bpcon()
 end
 function c7714344.damcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()
@@ -72,17 +72,9 @@ end
 function c7714344.damop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(1,0)
-	e1:SetCode(EFFECT_CHANGE_DAMAGE)
-	e1:SetValue(c7714344.damval)
-	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetReset(RESET_PHASE+PHASE_DAMAGE_CAL+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-	Duel.RegisterFlagEffect(tp,7714345,RESET_PHASE+PHASE_END,0,1)
-end
-function c7714344.damval(e,re,val,r,rp,rc)
-	local tp=e:GetHandlerPlayer()
-	if Duel.GetFlagEffect(tp,7714345)==0 or bit.band(r,REASON_BATTLE)==0 then return val end
-	Duel.ResetFlagEffect(tp,7714345)
-	return 0
 end

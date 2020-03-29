@@ -56,7 +56,7 @@ function c18967507.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c18967507.eqfilter),tp,LOCATION_GRAVE,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if tc then
-		if not Duel.Equip(tp,tc,c,true) then return end
+		if not Duel.Equip(tp,tc,c) then return end
 		local e1=Effect.CreateEffect(c)
 		e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -83,7 +83,7 @@ function c18967507.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and ep~=tp and Duel.IsChainNegatable(ev)
 end
 function c18967507.negfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_EQUIP) and c:IsAbleToGraveAsCost()
+	return (c:IsFaceup() or c:GetEquipTarget()) and c:IsType(TYPE_EQUIP) and c:IsAbleToGraveAsCost()
 end
 function c18967507.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c18967507.negfilter,tp,LOCATION_ONFIELD,0,1,nil) end

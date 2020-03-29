@@ -47,19 +47,13 @@ function c36239585.setfilter(c,e,tp)
 	if not c:IsSetCard(0x8d) then return false end
 	if c:IsType(TYPE_MONSTER) then
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
-	else return c:IsCanTurnSet() end
-end
-function c36239585.sefilter(c)
-	return c:IsSetCard(0x8d) and c:IsSSetable()
-end
-function c36239585.filter(c,e,tp)
-	return c:IsSetCard(0x8d) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) or c:IsSSetable())
+	else return c:IsSSetable() end
 end
 function c36239585.posfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()
 end
 function c36239585.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c36239585.filter(chkc,e,tp) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c36239585.setfilter(chkc,e,tp) end
 	if chk==0 then return Duel.IsExistingTarget(c36239585.setfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectTarget(tp,c36239585.setfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
@@ -68,6 +62,7 @@ function c36239585.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 	else
 		e:SetCategory(CATEGORY_POSITION)
+		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
 	end
 end
 function c36239585.setop(e,tp,eg,ep,ev,re,r,rp)
@@ -76,11 +71,11 @@ function c36239585.setop(e,tp,eg,ep,ev,re,r,rp)
 	local res=false
 	if tc:IsType(TYPE_MONSTER) then
 		res=Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+		if res~=0 then Duel.ConfirmCards(1-tp,tc) end
 	else
 		res=Duel.SSet(tp,tc)
 	end
 	if res~=0 then
-		Duel.ConfirmCards(1-tp,tc)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)

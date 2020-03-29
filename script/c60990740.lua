@@ -29,15 +29,14 @@ end
 function c60990740.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,1)
 		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and not Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_SSET) end
+		and Duel.IsPlayerCanSSet(tp) end
 end
 function c60990740.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanDiscardDeck(tp,1) then return end
 	Duel.ConfirmDecktop(tp,1)
 	local tc=Duel.GetDecktopGroup(tp,1):GetFirst()
 	Duel.DisableShuffleCheck()
-	if tc:GetType()==TYPE_TRAP and tc:IsSSetable() then
-		Duel.SSet(tp,tc)
+	if tc:GetType()==TYPE_TRAP and Duel.SSet(tp,tc)~=0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)

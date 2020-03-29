@@ -8,7 +8,7 @@ function c74003290.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(TIMING_DAMAGE_STEP,TIMING_DAMAGE_STEP+TIMINGS_CHECK_MONSTER)
-	e1:SetCondition(c74003290.condition)
+	e1:SetCondition(aux.dscon)
 	e1:SetTarget(c74003290.target)
 	e1:SetOperation(c74003290.activate)
 	c:RegisterEffect(e1)
@@ -23,9 +23,6 @@ function c74003290.initial_effect(c)
 	e2:SetTarget(c74003290.settg)
 	e2:SetOperation(c74003290.setop)
 	c:RegisterEffect(e2)
-end
-function c74003290.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
 end
 function c74003290.filter(c)
 	return c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_SPECIAL)
@@ -53,7 +50,7 @@ function c74003290.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.AdjustInstantly(tc)
 		local e3=e1:Clone()
 		e3:SetCode(EFFECT_SET_BASE_ATTACK)
-		e3:SetValue(tc:GetBaseAttack()/2)
+		e3:SetValue(math.ceil(tc:GetBaseAttack()/2))
 		tc:RegisterEffect(e3)
 	end
 end
@@ -69,9 +66,7 @@ function c74003290.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c74003290.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsSSetable() then
-		Duel.SSet(tp,c)
-		Duel.ConfirmCards(1-tp,c)
+	if c:IsRelateToEffect(e) and Duel.SSet(tp,c)~=0 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)

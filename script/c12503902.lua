@@ -7,10 +7,17 @@ function c12503902.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMING_DAMAGE_STEP)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
-	e1:SetCondition(c12503902.condition)
+	e1:SetCondition(aux.dscon)
 	e1:SetTarget(c12503902.target)
 	e1:SetOperation(c12503902.operation)
 	c:RegisterEffect(e1)
+	--atk up
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_TARGET)
+	e2:SetCode(EFFECT_UPDATE_ATTACK)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetValue(500)
+	c:RegisterEffect(e2)
 	--Destroy
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
@@ -26,9 +33,6 @@ function c12503902.descon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function c12503902.desop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
-end
-function c12503902.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
 end
 function c12503902.filter(c)
 	return c:IsFaceup() and c:IsRace(RACE_MACHINE)
@@ -47,15 +51,6 @@ function c12503902.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if c:IsRelateToEffect(e) and c12503902.filter(tc) and tc:IsRelateToEffect(e) then
 		c:SetCardTarget(tc)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_OWNER_RELATE)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetCondition(c12503902.rcon)
-		e1:SetValue(500)
-		tc:RegisterEffect(e1,true)
 		local g=Duel.GetMatchingGroup(c12503902.tfilter1,tp,LOCATION_SZONE,LOCATION_SZONE,nil,tc)
 		if g:GetCount()>0 then
 			local sg,fid=g:GetMaxGroup(Card.GetFieldID)
@@ -80,9 +75,6 @@ function c12503902.operation(e,tp,eg,ep,ev,re,r,rp)
 			c:RegisterEffect(e1,true)
 		end
 	end
-end
-function c12503902.rcon(e)
-	return e:GetOwner():IsHasCardTarget(e:GetHandler())
 end
 function c12503902.discon(e)
 	return e:GetHandler():GetCardTargetCount()>0

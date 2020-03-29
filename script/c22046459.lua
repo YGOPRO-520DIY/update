@@ -5,7 +5,7 @@ function c22046459.initial_effect(c)
 	e1:SetCategory(CATEGORY_EQUIP)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_CONTINUOUS_TARGET)
 	e1:SetTarget(c22046459.target)
 	e1:SetOperation(c22046459.operation)
 	c:RegisterEffect(e1)
@@ -45,6 +45,6 @@ function c22046459.value(e,c)
 	if Duel.GetLP(p)<Duel.GetLP(1-p) then
 		return c:GetBaseAttack()*2
 	elseif Duel.GetLP(p)>Duel.GetLP(1-p) then
-		return c:GetBaseAttack()/2
+		return math.ceil(c:GetBaseAttack()/2)
 	end
 end

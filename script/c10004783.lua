@@ -5,7 +5,7 @@ function c10004783.initial_effect(c)
 	e1:SetCategory(CATEGORY_EQUIP)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_CONTINUOUS_TARGET)
 	e1:SetTarget(c10004783.target)
 	e1:SetOperation(c10004783.operation)
 	c:RegisterEffect(e1)
@@ -56,7 +56,7 @@ function c10004783.tfcon(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(e:GetHandler():GetPreviousLocation(),LOCATION_ONFIELD)~=0
 end
 function c10004783.tffilter(c)
-	return c:IsSetCard(0x1034) and not c:IsForbidden()
+	return c:IsSetCard(0x1034) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function c10004783.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
@@ -76,6 +76,5 @@ function c10004783.tfop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 		tc:RegisterEffect(e1)
-		Duel.RaiseEvent(tc,EVENT_CUSTOM+47408488,e,0,tp,0,0)
 	end
 end

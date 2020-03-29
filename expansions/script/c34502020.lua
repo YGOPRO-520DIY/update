@@ -10,118 +10,84 @@ function c34502020.initial_effect(c)
 	e2:SetRange(LOCATION_EXTRA)
 	e2:SetValue(c34502020.splimit)
 	c:RegisterEffect(e2)
-	-----------
+	--
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(34502020,0))
-	e3:SetCategory(CATEGORY_TOGRAVE+CATEGORY_POSITION)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetCountLimit(1,34502020)
+	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetTarget(c34502020.tgtg)
-	e3:SetOperation(c34502020.tgop)
+	e3:SetCode(EVENT_CHAIN_SOLVING)
+	e3:SetOperation(c34502020.disop1)
 	c:RegisterEffect(e3)
-	----------
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(34502020,1))
-	e4:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP+EFFECT_TYPE_TRIGGER_O)
-	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e4:SetDescription(aux.Stringid(34502020,0))
+	e4:SetCategory(CATEGORY_REMOVE)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e4:SetCountLimit(1,34502020)
-	e4:SetTarget(c34502020.target)
-	e4:SetOperation(c34502020.activate)
+	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetTarget(c34502020.destg)
+	e4:SetOperation(c34502020.desop)
 	c:RegisterEffect(e4)
+	--
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(34502020,1))
+	e5:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
+	e5:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e5:SetCode(EVENT_LEAVE_FIELD)
+	e5:SetCondition(c34502020.sumcon)
+	e5:SetTarget(c34502020.sumtg)
+	e5:SetOperation(c34502020.sumop)
+	c:RegisterEffect(e5)
 end
 function c34502020.fusfilter1(c)
-	return c:IsSetCard(0x9d)
+	return c:IsSetCard(0x9d) and c:IsAttribute(ATTRIBUTE_WATER)
 end
 function c34502020.fusfilter2(c)
-	return c:IsType(TYPE_MONSTER) and c:IsLevelBelow(4)
+	return c:IsCode(20366274)
 end
 function c34502020.splimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
 end
-function c34502020.filter(c)
-	return c:IsSetCard(0x9d) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
-end
-function c34502020.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local tc=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c34502020.filter,tp,LOCATION_DECK,0,1,nil) and tc:IsCanTurnSet() end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,tc,1,0,0)
-end
-function c34502020.tgop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c34502020.filter,tp,LOCATION_DECK,0,1,1,nil)
-	local tc=e:GetHandler()
-	if g:GetCount()>0 and tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		Duel.SendtoGrave(g,REASON_EFFECT)
-		Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
+function c34502020.disop1(e,tp,eg,ep,ev,re,r,rp,rc)
+	local rc=re:GetHandler()
+	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	if re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_GRAVE
+		and re:GetHandler() and not rc:IsSetCard(0x9d) then
+		Duel.NegateEffect(ev)
 	end
 end
-function c34502020.filter0(c)
-	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck()
+function c34502020.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(1-tp) end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
-function c34502020.filter1(c,e)
-	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck() and not c:IsImmuneToEffect(e)
-end
-function c34502020.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x9d) and (not f or f(c))
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
-end
-function c34502020.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local chkf=tp
-		local mg=Duel.GetMatchingGroup(c34502020.filter0,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-		local res=Duel.IsExistingMatchingCard(c34502020.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg,nil,chkf)
-		if not res then
-			local ce=Duel.GetChainMaterial(tp)
-			if ce~=nil then
-				local fgroup=ce:GetTarget()
-				local mg3=fgroup(ce,e,tp)
-				local mf=ce:GetValue()
-				res=Duel.IsExistingMatchingCard(c34502020.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg3,mf,chkf)
-			end
-		end
-		return res
+function c34502020.desop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
-function c34502020.activate(e,tp,eg,ep,ev,re,r,rp)
-	local chkf=tp
-	local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c34502020.filter1),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e)
-	local sg1=Duel.GetMatchingGroup(c34502020.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg,nil,chkf)
-	local mg3=nil
-	local sg2=nil
-	local ce=Duel.GetChainMaterial(tp)
-	if ce~=nil then
-		local fgroup=ce:GetTarget()
-		mg3=fgroup(ce,e,tp)
-		local mf=ce:GetValue()
-		sg2=Duel.GetMatchingGroup(c34502020.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg3,mf,chkf)
-	end
-	if sg1:GetCount()>0 or (sg2~=nil and sg2:GetCount()>0) then
-		local sg=sg1:Clone()
-		if sg2 then sg:Merge(sg2) end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local tg=sg:Select(tp,1,1,nil)
-		local tc=tg:GetFirst()
-		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
-			local mat=Duel.SelectFusionMaterial(tp,tc,mg,nil,chkf)
-			tc:SetMaterial(mat)
-			if mat:IsExists(Card.IsFacedown,1,nil) then
-				local cg=mat:Filter(Card.IsFacedown,nil)
-				Duel.ConfirmCards(1-tp,cg)
-			end
-			Duel.SendtoDeck(mat,nil,2,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
-			Duel.BreakEffect()
-			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
-		else
-			local mat2=Duel.SelectFusionMaterial(tp,tc,mg3,nil,chkf)
-			local fop=ce:GetOperation()
-			fop(ce,e,tp,tc,mat2)
-		end
-		tc:CompleteProcedure()
+function c34502020.sumcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler() and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+end
+function c34502020.filter3(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x9d) and c:IsType(TYPE_FUSION) and c:IsCode(20366274)
+end
+function c34502020.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and c34502020.filter3(chkc,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(c34502020.filter3,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectTarget(tp,c34502020.filter3,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+end
+function c34502020.sumop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

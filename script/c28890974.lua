@@ -29,7 +29,7 @@ function c28890974.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 			e1:SetCode(EFFECT_SET_ATTACK)
-			e1:SetValue(atk/2)
+			e1:SetValue(math.ceil(atk/2))
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1,true)
 			local e2=Effect.CreateEffect(e:GetHandler())
@@ -41,8 +41,8 @@ function c28890974.activate(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e2:SetCountLimit(1)
 			tc:RegisterEffect(e2,true)
-			Duel.SpecialSummonComplete()
 		end
+		Duel.SpecialSummonComplete()
 	end
 end
 function c28890974.desop(e,tp,eg,ep,ev,re,r,rp)

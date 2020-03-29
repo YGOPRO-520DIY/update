@@ -66,7 +66,7 @@ function c77522571.spop1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c77522571.spfilter2(c,e,tp)
-	return c:IsSetCard(0xa9,0xad,0xc3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevelBelow(4) and c:IsSetCard(0xa9,0xad,0xc3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c77522571.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -97,22 +97,20 @@ function c77522571.costfilter(c)
 	return c:IsLevelAbove(1) and c:IsRace(RACE_FIEND)
 end
 function c77522571.fgoal(sg,e,tp)
-	if Duel.GetLocationCountFromEx(tp,tp,sg)>0 then
-		local lv=sg:GetSum(Card.GetLevel)
-		Duel.SetSelectedCard(sg)
-		return Duel.CheckReleaseGroup(tp,nil,0,nil)
-			and Duel.IsExistingMatchingCard(c77522571.spfilter3,tp,LOCATION_EXTRA,0,1,nil,e,tp,lv)
-	else return false end
+	local lv=sg:GetSum(Card.GetLevel)
+	return Duel.CheckReleaseGroup(tp,aux.IsInGroup,#sg,nil,sg)
+		and Duel.IsExistingMatchingCard(c77522571.spfilter3,tp,LOCATION_EXTRA,0,1,nil,e,tp,lv,sg)
 end
-function c77522571.spfilter3(c,e,tp,lv)
+function c77522571.spfilter3(c,e,tp,lv,sg)
 	return c:IsSetCard(0xad) and c:IsType(TYPE_FUSION) and c:IsLevel(lv)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial()
+		and Duel.GetLocationCountFromEx(tp,tp,sg,c)>0
 end
 function c77522571.spcost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rg=Duel.GetReleaseGroup(tp):Filter(c77522571.costfilter,nil)
 	if chk==0 then return rg:CheckSubGroup(c77522571.fgoal,2,rg:GetCount(),e,tp) end
 	local g=rg:SelectSubGroup(tp,c77522571.fgoal,false,2,rg:GetCount(),e,tp)
-	local lv=sg:GetSum(Card.GetLevel)
+	local lv=g:GetSum(Card.GetLevel)
 	e:SetLabel(lv)
 	Duel.Release(g,REASON_COST)
 end
@@ -121,10 +119,10 @@ function c77522571.sptg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c77522571.spop3(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCountFromEx(tp)<=0 or not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_FMATERIAL) then return end
+	if not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_FMATERIAL) then return end
 	local lv=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c77522571.spfilter3,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,lv)
+	local g=Duel.SelectMatchingCard(tp,c77522571.spfilter3,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,lv,nil)
 	local tc=g:GetFirst()
 	if tc then
 		tc:SetMaterial(nil)

@@ -9,14 +9,11 @@ function c79337169.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(TIMING_DAMAGE_STEP)
-	e1:SetCondition(c79337169.condition)
+	e1:SetCondition(aux.dscon)
 	e1:SetCost(c79337169.cost)
 	e1:SetTarget(c79337169.target)
 	e1:SetOperation(c79337169.operation)
 	c:RegisterEffect(e1)
-end
-function c79337169.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
 end
 function c79337169.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
@@ -46,12 +43,16 @@ function c79337169.operation(e,tp,eg,ep,ev,re,r,rp)
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e3:SetCode(EVENT_DAMAGE_STEP_END)
+		e3:SetCondition(c79337169.resetcon)
 		e3:SetOperation(c79337169.resetop)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e3:SetLabelObject(e2)
 		tc:RegisterEffect(e3)
 		tc=g:GetNext()
 	end
+end
+function c79337169.resetcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetBattledGroupCount()>0
 end
 function c79337169.resetop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=e:GetLabelObject()

@@ -16,6 +16,7 @@ function c26077387.initial_effect(c)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(26077387,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_LEAVE_FIELD)
@@ -50,7 +51,7 @@ function c26077387.cfilter(c,tp,rp)
 		and c:IsPreviousSetCard(0x1115) and (c:IsReason(REASON_BATTLE) or (rp==1-tp and c:IsReason(REASON_EFFECT)))
 end
 function c26077387.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c26077387.cfilter,1,nil,tp,rp)
+	return eg:IsExists(c26077387.cfilter,1,nil,tp,rp) and not eg:IsContains(e:GetHandler())
 end
 function c26077387.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

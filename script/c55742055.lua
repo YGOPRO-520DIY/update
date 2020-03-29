@@ -59,7 +59,7 @@ function c55742055.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c55742055.confilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x107a)
+	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0x107a)
 end
 function c55742055.effcon(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetTurnPlayer()~=tp then return false end
@@ -102,7 +102,7 @@ function c55742055.operation2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local sg=tg:Select(tp,1,1,nil)
-		Duel.Equip(tp,sg:GetFirst(),tc,true)
+		Duel.Equip(tp,sg:GetFirst(),tc)
 	end
 end
 function c55742055.thfilter(c)

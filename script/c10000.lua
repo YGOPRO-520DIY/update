@@ -18,24 +18,24 @@ function c10000.initial_effect(c)
 	e2:SetOperation(c10000.spop)
 	c:RegisterEffect(e2)
 end
+function c10000.rfilter(c,tp)
+	return c:IsControler(tp) or c:IsFaceup()
+end
 function c10000.sumfilter(c)
 	return c:GetAttack()+c:GetDefense()
 end
 function c10000.fselect(g,tp)
 	Duel.SetSelectedCard(g)
-	if Duel.GetMZoneCount(tp,g)>0 and g:CheckWithSumGreater(c10000.sumfilter,10000) then
-		Duel.SetSelectedCard(g)
-		return Duel.CheckReleaseGroup(tp,nil,0,nil)
-	else return false end
+	return g:CheckWithSumGreater(c10000.sumfilter,10000) and aux.mzctcheckrel(g,tp)
 end
 function c10000.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local rg=Duel.GetReleaseGroup(tp)
+	local rg=Duel.GetReleaseGroup(tp):Filter(c10000.rfilter,nil,tp)
 	return rg:CheckSubGroup(c10000.fselect,1,rg:GetCount(),tp)
 end
 function c10000.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local rg=Duel.GetReleaseGroup(tp)
+	local rg=Duel.GetReleaseGroup(tp):Filter(c10000.rfilter,nil,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local sg=rg:SelectSubGroup(tp,c10000.fselect,true,1,rg:GetCount(),tp)
 	if sg then

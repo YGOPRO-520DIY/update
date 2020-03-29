@@ -34,16 +34,13 @@ end
 function c93294869.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,c93294869.filter1,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SSet(tp,g)
-		Duel.ConfirmCards(1-tp,g)
+	if g:GetCount()>0 and Duel.SSet(tp,g)~=0 then
 		local sg=Duel.GetMatchingGroup(c93294869.filter2,tp,LOCATION_DECK,0,nil)
 		if e:GetLabel()==1 and sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(93294869,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 			local tg=sg:Select(tp,1,1,nil)
 			Duel.SSet(tp,tg)
-			Duel.ConfirmCards(1-tp,tg)
 		end
 	end
 end

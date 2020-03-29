@@ -36,7 +36,7 @@ function c89516305.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e3:SetHintTiming(TIMING_DAMAGE_STEP)
-	e3:SetCondition(c89516305.atkcon)
+	e3:SetCondition(aux.dscon)
 	e3:SetCost(c89516305.cost)
 	e3:SetTarget(c89516305.atktg)
 	e3:SetOperation(c89516305.atkop)
@@ -61,17 +61,13 @@ function c89516305.stop(e,tp,eg,ep,ev,re,r,rp)
 		c:SetCardTarget(tc)
 		e:SetLabelObject(tc)
 		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
+		e1:SetType(EFFECT_TYPE_TARGET)
 		e1:SetCode(EFFECT_CANNOT_TRIGGER)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetCondition(c89516305.rcon)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		e1:SetValue(1)
-		tc:RegisterEffect(e1)
+		c:RegisterEffect(e1)
 	end
-end
-function c89516305.rcon(e)
-	return e:GetOwner():IsHasCardTarget(e:GetHandler())
 end
 function c89516305.setfilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_PLANT) and c:IsCanTurnSet()
@@ -88,9 +84,6 @@ function c89516305.setop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
 		Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
 	end
-end
-function c89516305.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
 end
 function c89516305.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end

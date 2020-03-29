@@ -7,14 +7,11 @@ function c68540058.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(TIMING_DAMAGE_STEP)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
-	e1:SetCondition(c68540058.condition)
+	e1:SetCondition(aux.dscon)
 	e1:SetCost(c68540058.cost)
 	e1:SetTarget(c68540058.target)
 	e1:SetOperation(c68540058.operation)
 	c:RegisterEffect(e1)
-end
-function c68540058.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
 end
 function c68540058.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -94,5 +91,5 @@ function c68540058.atkcon(e)
 		and Duel.GetAttacker()==e:GetHandler():GetEquipTarget() and Duel.GetAttackTarget()
 end
 function c68540058.atkval(e,c)
-	return Duel.GetAttackTarget():GetAttack()/2
+	return math.ceil(Duel.GetAttackTarget():GetAttack()/2)
 end

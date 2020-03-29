@@ -7,17 +7,15 @@ function c61936647.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CONTINUOUS_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(TIMING_DAMAGE_STEP)
-	e1:SetCondition(c61936647.condition)
+	e1:SetCondition(aux.dscon)
 	e1:SetTarget(c61936647.target)
 	e1:SetOperation(c61936647.tgop)
 	c:RegisterEffect(e1)
 	--atk up
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetType(EFFECT_TYPE_TARGET)
 	e3:SetCode(EFFECT_UPDATE_ATTACK)
 	e3:SetRange(LOCATION_SZONE)
-	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e3:SetTarget(aux.ctg)
 	e3:SetValue(800)
 	c:RegisterEffect(e3)
 	--destroy replace
@@ -52,9 +50,6 @@ function c61936647.initial_effect(c)
 	e6:SetOperation(c61936647.spop)
 	c:RegisterEffect(e6)
 end
-function c61936647.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
-end
 function c61936647.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
@@ -70,7 +65,7 @@ function c61936647.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c61936647.repfilter(c,e)
-	return aux.ctg(e,c) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+	return e:GetHandler():IsHasCardTarget(c) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function c61936647.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

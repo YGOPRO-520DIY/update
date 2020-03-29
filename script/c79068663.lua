@@ -5,7 +5,7 @@ function c79068663.initial_effect(c)
 	e1:SetCategory(CATEGORY_EQUIP)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_CONTINUOUS_TARGET)
 	e1:SetTarget(c79068663.target)
 	e1:SetOperation(c79068663.operation)
 	c:RegisterEffect(e1)
@@ -57,7 +57,7 @@ function c79068663.damop(e,tp,eg,ep,ev,re,r,rp)
 	local des=eg:GetFirst()
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	if des:IsRelateToEffect(e) then
-		local dam=des:GetAttack()/2
+		local dam=math.floor(des:GetAttack()/2)
 		if dam<0 then dam=0 end
 		Duel.Damage(p,dam,REASON_EFFECT)
 	end

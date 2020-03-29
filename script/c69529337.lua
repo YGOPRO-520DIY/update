@@ -19,6 +19,7 @@ function c69529337.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCountLimit(1)
+	e2:SetHintTiming(0,TIMING_END_PHASE)
 	e2:SetCondition(c69529337.condition)
 	e2:SetTarget(c69529337.target)
 	e2:SetOperation(c69529337.operation)
@@ -66,7 +67,7 @@ function c69529337.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
 function c69529337.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+	local tc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 	if chkc then return false end
 	if chk==0 then return tc and tc:IsFaceup() and tc:IsSetCard(0xe2) and tc:IsAbleToGrave() and tc:IsCanBeEffectTarget(e)
 		and Duel.IsExistingMatchingCard(c69529337.filter,tp,LOCATION_DECK,0,1,nil,tp,tc:GetCode()) end

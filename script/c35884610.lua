@@ -5,7 +5,7 @@ function c35884610.initial_effect(c)
 	e1:SetCategory(CATEGORY_EQUIP)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_CONTINUOUS_TARGET)
 	e1:SetTarget(c35884610.target)
 	e1:SetOperation(c35884610.operation)
 	c:RegisterEffect(e1)
@@ -27,11 +27,10 @@ function c35884610.initial_effect(c)
 	c:RegisterEffect(e4)
 	--damage double
 	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e5:SetRange(LOCATION_SZONE)
-	e5:SetCode(EVENT_PRE_BATTLE_DAMAGE)
+	e5:SetType(EFFECT_TYPE_EQUIP)
+	e5:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
 	e5:SetCondition(c35884610.damcon)
-	e5:SetOperation(c35884610.damop)
+	e5:SetValue(aux.ChangeBattleDamage(1,DOUBLE_DAMAGE))
 	c:RegisterEffect(e5)
 	--chain atk
 	local e6=Effect.CreateEffect(c)
@@ -84,11 +83,8 @@ function c35884610.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Equip(tp,e:GetHandler(),tc)
 	end
 end
-function c35884610.damcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:GetFirst()==e:GetHandler():GetEquipTarget() and ep~=tp and eg:GetFirst():GetBattleTarget()~=nil
-end
-function c35884610.damop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ChangeBattleDamage(ep,ev*2)
+function c35884610.damcon(e)
+	return e:GetHandler():GetEquipTarget():GetBattleTarget()~=nil
 end
 function c35884610.atcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler():GetEquipTarget()

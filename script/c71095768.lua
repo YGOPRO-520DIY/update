@@ -24,20 +24,12 @@ function c71095768.initial_effect(c)
 	e2:SetOperation(c71095768.spop)
 	c:RegisterEffect(e2)
 	--destroy
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(c71095768.regcon)
-	e3:SetOperation(aux.chainreg)
-	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(71095768,1))
 	e4:SetCategory(CATEGORY_DESTROY)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
-	e4:SetCode(EVENT_CHAIN_SOLVING)
+	e4:SetCode(EVENT_CHAINING)
 	e4:SetCountLimit(1,71095769)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCondition(c71095768.descon)
@@ -93,7 +85,6 @@ function c71095768.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,2)
 		and not Duel.IsPlayerAffectedByEffect(tp,59822133)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
-		and Duel.GetLocationCountFromEx(tp)>0
 		and g:CheckSubGroup(c71095768.fselect,2,2,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
@@ -122,7 +113,6 @@ function c71095768.spop(e,tp,eg,ep,ev,re,r,rp)
 		local e4=e3:Clone()
 		tc2:RegisterEffect(e4)
 		Duel.SpecialSummonComplete()
-		if Duel.GetLocationCountFromEx(tp,tp,sg)<=0 then return end
 		local xyzg=Duel.GetMatchingGroup(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,nil,sg,2,2)
 		if xyzg:GetCount()>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -131,16 +121,13 @@ function c71095768.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c71095768.regcon(e,tp,eg,ep,ev,re,r,rp)
+function c71095768.descon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local zone=(c:GetLinkedZone(0) & 0x7f) | ((c:GetLinkedZone(1) & 0x7f)<<0x10)
 	local seq=c71095768[2]
-	return seq and bit.extract(zone,seq)~=0
-end
-function c71095768.descon(e,tp,eg,ep,ev,re,r,rp)
+	if not seq or bit.extract(zone,seq)==0 then return false end
 	return Duel.GetChainInfo(ev,CHAININFO_CHAIN_ID)==c71095768[0]
 		and c71095768[1]==LOCATION_MZONE and re:IsActiveType(TYPE_XYZ)
-		and e:GetHandler():GetFlagEffect(1)>0
 end
 function c71095768.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and chkc:IsType(TYPE_SPELL+TYPE_TRAP) end

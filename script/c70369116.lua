@@ -69,6 +69,7 @@ function c70369116.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
 	te:SetLabelObject(e:GetLabelObject())
 	e:SetLabelObject(te)
+	Duel.ClearOperationInfo(0)
 end
 function c70369116.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()

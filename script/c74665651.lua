@@ -46,7 +46,7 @@ function c74665651.actop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local tc=Duel.SelectMatchingCard(tp,c74665651.actfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,tp):GetFirst()
 	if tc then
-		local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 		if fc then
 			Duel.SendtoGrave(fc,REASON_RULE)
 			Duel.BreakEffect()
@@ -73,6 +73,6 @@ function c74665651.atlimit(e,c)
 	return c:IsFaceup() and c:IsSetCard(0x131) and Duel.IsExistingMatchingCard(c74665651.limfilter,c:GetControler(),LOCATION_MZONE,0,1,nil,c:GetLevel())
 end
 function c74665651.tglimit(e,c)
-	return c:IsSetCard(0xbb)
+	return c:IsSetCard(0x131)
 		and Duel.IsExistingMatchingCard(c74665651.limfilter,c:GetControler(),LOCATION_MZONE,0,1,nil,c:GetLevel())
 end

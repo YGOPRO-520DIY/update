@@ -29,7 +29,7 @@ function c74644400.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c74644400.thfilter(c)
-	return aux.IsCodeListed(c,80280737) and not c:IsCode(74644400) or c:IsCode(80280737)
+	return (aux.IsCodeListed(c,80280737) or c:IsCode(80280737)) and not c:IsCode(74644400)
 		and c:IsAbleToHand()
 end
 function c74644400.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -78,6 +78,6 @@ function c74644400.spop(e,tp,eg,ep,ev,re,r,rp,chk)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(lv)
 		tc:RegisterEffect(e1)
-		Duel.SpecialSummonComplete()
 	end
+	Duel.SpecialSummonComplete()
 end

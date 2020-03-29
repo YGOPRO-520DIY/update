@@ -5,7 +5,7 @@ function c93394164.initial_effect(c)
 	e1:SetCategory(CATEGORY_EQUIP)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_CONTINUOUS_TARGET)
 	e1:SetTarget(c93394164.target)
 	e1:SetOperation(c93394164.operation)
 	c:RegisterEffect(e1)
@@ -61,7 +61,7 @@ function c93394164.seqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ec=e:GetHandler():GetEquipTarget()
 	local p=ec:GetControler()
 	local zone=bit.band(ec:GetLinkedZone(),0x1f)
-	if chk==0 then return Duel.GetLocationCount(p,LOCATION_MZONE,p,LOCATION_REASON_CONTROL,zone)>0 end
+	if chk==0 then return Duel.GetLocationCount(p,LOCATION_MZONE,PLAYER_NONE,0,zone)>0 end
 end
 function c93394164.seqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -70,7 +70,7 @@ function c93394164.seqop(e,tp,eg,ep,ev,re,r,rp)
 	if not ec or ec:IsImmuneToEffect(e) then return end
 	local p=ec:GetControler()
 	local zone=bit.band(ec:GetLinkedZone(),0x1f)
-	if Duel.GetLocationCount(p,LOCATION_MZONE,p,LOCATION_REASON_CONTROL,zone)>0 then
+	if Duel.GetLocationCount(p,LOCATION_MZONE,PLAYER_NONE,0,zone)>0 then
 		local s=0
 		if ec:IsControler(tp) then
 			local flag=bit.bxor(zone,0xff)

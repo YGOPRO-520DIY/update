@@ -24,6 +24,12 @@ function c60202749.initial_effect(c)
 	e3:SetCode(EVENT_LEAVE_FIELD)
 	e3:SetOperation(c60202749.desop)
 	c:RegisterEffect(e3)
+	--disable
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_TARGET)
+	e4:SetCode(EFFECT_DISABLE)
+	e4:SetRange(LOCATION_SZONE)
+	c:RegisterEffect(e4)
 end
 function c60202749.filter(c,e,tp)
 	return c:IsSetCard(0x74) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -57,25 +63,14 @@ function c60202749.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
 		c:SetCardTarget(tc)
-		Duel.SpecialSummonComplete()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_OWNER_RELATE)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetCondition(c60202749.rcon)
-		tc:RegisterEffect(e1,true)
 	end
-end
-function c60202749.rcon(e)
-	return e:GetOwner():IsHasCardTarget(e:GetHandler())
+	Duel.SpecialSummonComplete()
 end
 function c60202749.sdescon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp and Duel.GetTurnCount()~=e:GetLabel()
 end
 function c60202749.sdesop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
+	Duel.Destroy(e:GetHandler(),REASON_RULE)
 end
 function c60202749.aclimit(e,re,tp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL)
