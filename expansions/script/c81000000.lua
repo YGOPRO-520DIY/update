@@ -75,3 +75,15 @@ function Tenka.MaidDragon(c)
 	e0:SetValue(POS_FACEUP_ATTACK)
 	c:RegisterEffect(e0)
 end
+--
+function Tenka.Asamiya(c)
+	c:EnableReviveLimit()
+	aux.AddCodeList(c,81027000)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e0:SetCode(EFFECT_CHANGE_CODE)
+	e0:SetRange(LOCATION_MZONE+LOCATION_HAND)
+	e0:SetValue(81027000)
+	c:RegisterEffect(e0)
+end

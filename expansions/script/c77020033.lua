@@ -1,0 +1,94 @@
+--高天艳阳·式神 日和坊
+local m=77020033
+local set=0x3ee3
+local cm=_G["c"..m]
+function cm.initial_effect(c)
+	--pendulum summon
+	aux.EnablePendulumAttribute(c)
+	--spsummon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_PZONE)
+	e1:SetCountLimit(1)
+	e1:SetCondition(cm.spcon)
+	e1:SetTarget(cm.sptg)
+	e1:SetOperation(cm.spop)
+	c:RegisterEffect(e1)
+	--SpecialSummonRule
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e2:SetRange(LOCATION_EXTRA)
+	e2:SetCountLimit(1)
+	e2:SetCondition(cm.regcon)
+	e2:SetCost(cm.regcost)
+	e2:SetTarget(cm.reget)
+	e2:SetOperation(cm.regop)
+	c:RegisterEffect(e2)
+end
+	--spsummon
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_PZONE,0,1,e:GetHandler(),0x3ee3)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstMatchingCard(nil,tp,LOCATION_PZONE,0,c)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tc,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	local tc=Duel.GetFirstMatchingCard(nil,tp,LOCATION_PZONE,0,c)
+	if tc and Duel.Destroy(tc,REASON_EFFECT)~=0 then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+	--special summon
+function cm.spfilter(c,e,tp)
+	return c:IsSetCard(0x3ee3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+end
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+	--SpecialSummonRule
+function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnCount()==e:GetHandler():GetTurnID()+1
+end
+function cm.regcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
+	Duel.SendtoDeck(e:GetHandler(),tp,2,REASON_COST)
+end
+function cm.stpfilter(c,e,tp)
+   return c:IsSetCard(0x3ee3) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and c:IsFaceup()
+end
+function cm.reget(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.stpfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA+LOCATION_GRAVE)
+end
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,cm.stpfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
+	end
+end
